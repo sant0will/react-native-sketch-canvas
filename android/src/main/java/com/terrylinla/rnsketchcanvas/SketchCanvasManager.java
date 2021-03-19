@@ -98,9 +98,9 @@ public class SketchCanvasManager extends SimpleViewManager<SketchCanvas> {
                 // get cordinates of click point
                 int x = (int)args.getDouble(0);
                 int y = (int)args.getDouble(1);
-                String type = args.getString(2);
+                // String type = args.getString(2);
 
-                Log.d("type", type);
+                // Log.d("type", type);
 
                 // get current color from click point
                 Color currentColor = sketchPattern.getColor(x, y);

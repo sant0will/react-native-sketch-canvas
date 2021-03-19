@@ -198,7 +198,7 @@ public class SketchCanvas extends View {
         invalidateCanvas(true);
     }
 
-    public void addPoint(float x, float y, String type) {
+    public void addPoint(float x, float y) {
         Rect updateRect = mCurrentPath.addPoint(new PointF(x, y));
 
         if (mCurrentPath.isTranslucent) {
