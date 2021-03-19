@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.Matrix;
 import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
@@ -25,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 class CanvasText {
     public String text;
@@ -49,10 +51,11 @@ public class SketchCanvas extends View {
 
     private boolean mNeedsFullRedraw = true;
 
+    private Matrix canvasWithBackground;
     private int mOriginalWidth, mOriginalHeight;
     private Bitmap mBackgroundImage;
     private String mContentMode;
-
+    private byte[] byteArray;
     private ArrayList<CanvasText> mArrCanvasText = new ArrayList<CanvasText>();
     private ArrayList<CanvasText> mArrTextOnSketch = new ArrayList<CanvasText>();
     private ArrayList<CanvasText> mArrSketchOnText = new ArrayList<CanvasText>();
@@ -62,7 +65,7 @@ public class SketchCanvas extends View {
         mContext = context;
     }
 
-    public boolean openImageFile(String filename, String directory, String mode) {
+    public Bitmap openImageFile(String filename, String directory, String mode) {
         if(filename != null) {
             int res = mContext.getResources().getIdentifier(
                 filename.lastIndexOf('.') == -1 ? filename : filename.substring(0, filename.lastIndexOf('.')), 
@@ -80,10 +83,11 @@ public class SketchCanvas extends View {
 
                 invalidateCanvas(true);
 
-                return true;
             }
         }
-        return false;
+    
+    return mBackgroundImage;
+        
     }
 
     public void setCanvasText(ReadableArray aText) {
@@ -194,13 +198,14 @@ public class SketchCanvas extends View {
         invalidateCanvas(true);
     }
 
-    public void addPoint(float x, float y) {
+    public void addPoint(float x, float y, String type) {
         Rect updateRect = mCurrentPath.addPoint(new PointF(x, y));
 
         if (mCurrentPath.isTranslucent) {
             mTranslucentDrawingCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.MULTIPLY);
             mCurrentPath.draw(mTranslucentDrawingCanvas);
-        } else {
+        } 
+        else {
             mCurrentPath.drawLastPoint(mDrawingCanvas);
         }
         invalidate(updateRect);
@@ -347,9 +352,7 @@ public class SketchCanvas extends View {
         if (mBackgroundImage != null) {
             Rect dstRect = new Rect();
             canvas.getClipBounds(dstRect);
-            canvas.drawBitmap(mBackgroundImage, null, 
-                Utility.fillImage(mBackgroundImage.getWidth(), mBackgroundImage.getHeight(), dstRect.width(), dstRect.height(), mContentMode), 
-                null);
+            canvas.drawBitmap(mBackgroundImage, 0, 0, null);
         }
 
         for(CanvasText text: mArrSketchOnText) {

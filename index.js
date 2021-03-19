@@ -22,6 +22,7 @@ export default class RNSketchCanvas extends React.Component {
     onClearPressed: PropTypes.func,
     onPathsChange: PropTypes.func,
     user: PropTypes.string,
+    type: PropTypes.string,
 
     closeComponent: PropTypes.node,
     eraseComponent: PropTypes.node,
@@ -72,6 +73,7 @@ export default class RNSketchCanvas extends React.Component {
     onClearPressed: () => { },
     onPathsChange: () => { },
     user: null,
+    type: 'freedraw',
 
     closeComponent: null,
     eraseComponent: null,
@@ -259,6 +261,7 @@ export default class RNSketchCanvas extends React.Component {
           localSourceImage={this.props.localSourceImage}
           permissionDialogTitle={this.props.permissionDialogTitle}
           permissionDialogMessage={this.props.permissionDialogMessage}
+          type={this.props.type}
         />
         <View style={{ flexDirection: 'row' }}>
           <FlatList

@@ -8,6 +8,8 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.util.Log;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Callback;
@@ -36,11 +38,11 @@ public class SketchCanvasManager extends SimpleViewManager<SketchCanvas> {
     public static final int COMMAND_DELETE_PATH = 5;
     public static final int COMMAND_SAVE = 6;
     public static final int COMMAND_END_PATH = 7;
-
-    public static SketchCanvas Canvas = null;
-
+    public static SketchCanvas Canvas = null;    
     private static final String PROPS_LOCAL_SOURCE_IMAGE = "localSourceImage";
     private static final String PROPS_TEXT = "text";
+
+    private Bitmap sketchPattern;
 
     @Override
     public String getName() {
@@ -56,7 +58,7 @@ public class SketchCanvasManager extends SimpleViewManager<SketchCanvas> {
     @ReactProp(name = PROPS_LOCAL_SOURCE_IMAGE)
     public void setLocalSourceImage(SketchCanvas viewContainer, ReadableMap localSourceImage) {
         if (localSourceImage != null && localSourceImage.getString("filename") != null) {
-            viewContainer.openImageFile(
+            sketchPattern = viewContainer.openImageFile(
                 localSourceImage.hasKey("filename") ? localSourceImage.getString("filename") : null,
                 localSourceImage.hasKey("directory") ? localSourceImage.getString("directory") : "",
                 localSourceImage.hasKey("mode") ? localSourceImage.getString("mode") : ""
@@ -93,8 +95,34 @@ public class SketchCanvasManager extends SimpleViewManager<SketchCanvas> {
     public void receiveCommand(SketchCanvas view, int commandType, @Nullable ReadableArray args) {
         switch (commandType) {
             case COMMAND_ADD_POINT: {
-                view.addPoint((float)args.getDouble(0), (float)args.getDouble(1));
+                // get cordinates of click point
+                int x = (int)args.getDouble(0);
+                int y = (int)args.getDouble(1);
+                String type = args.getString(2);
+
+                Log.d("type", type);
+
+                // get current color from click point
+                Color currentColor = sketchPattern.getColor(x, y);
+
+                // get current rgba from click point
+                float red = currentColor.red();
+                float green = currentColor.green();
+                float blue = currentColor.blue();
+                float alpha = currentColor.alpha();
+
+                // verify if click point are inside of sketch area
+                if(x < sketchPattern.getWidth() && y < sketchPattern.getHeight()){
+                    // verify if click point had alpha
+                    // and if click point color (RGB - 0..1) are closest to white
+                    if(alpha > 0 && red > 0.51 && blue > 0.51 && green > 0.51 ){
+                        view.addPoint(x,y);
+                        return;
+                    }
+                }
+            
                 return;
+
             }
             case COMMAND_NEW_PATH: {
                 view.newPath(args.getInt(0), args.getInt(1), (float)args.getDouble(2));

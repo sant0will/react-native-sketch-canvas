@@ -33,6 +33,7 @@ class SketchCanvas extends React.Component {
     onStrokeEnd: PropTypes.func,
     onSketchSaved: PropTypes.func,
     user: PropTypes.string,
+    type: PropTypes.string,
 
     touchEnabled: PropTypes.bool,
 
@@ -64,7 +65,7 @@ class SketchCanvas extends React.Component {
     onStrokeEnd: () => { },
     onSketchSaved: () => { },
     user: null,
-
+    type: 'freedraw',
     touchEnabled: true,
 
     text: null,
@@ -183,7 +184,8 @@ class SketchCanvas extends React.Component {
           UIManager.RNSketchCanvas.Commands.addPoint,
           [
             parseFloat((gestureState.x0 - this._offset.x).toFixed(2) * this._screenScale),
-            parseFloat((gestureState.y0 - this._offset.y).toFixed(2) * this._screenScale)
+            parseFloat((gestureState.y0 - this._offset.y).toFixed(2) * this._screenScale),
+            this.props.type
           ]
         )
         const x = parseFloat((gestureState.x0 - this._offset.x).toFixed(2)), y = parseFloat((gestureState.y0 - this._offset.y).toFixed(2))
@@ -195,7 +197,8 @@ class SketchCanvas extends React.Component {
         if (this._path) {
           UIManager.dispatchViewManagerCommand(this._handle, UIManager.RNSketchCanvas.Commands.addPoint, [
             parseFloat((gestureState.moveX - this._offset.x).toFixed(2) * this._screenScale),
-            parseFloat((gestureState.moveY - this._offset.y).toFixed(2) * this._screenScale)
+            parseFloat((gestureState.moveY - this._offset.y).toFixed(2) * this._screenScale),
+            this.props.type
           ])
           const x = parseFloat((gestureState.moveX - this._offset.x).toFixed(2)), y = parseFloat((gestureState.moveY - this._offset.y).toFixed(2))
           this._path.data.push(`${x},${y}`)
@@ -250,6 +253,7 @@ class SketchCanvas extends React.Component {
         permissionDialogTitle={this.props.permissionDialogTitle}
         permissionDialogMessage={this.props.permissionDialogMessage}
         text={this.state.text}
+        type={this.props.type}
       />
     );
   }
