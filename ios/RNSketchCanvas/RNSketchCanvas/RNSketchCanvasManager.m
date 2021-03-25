@@ -65,7 +65,7 @@ RCT_EXPORT_METHOD(save:(nonnull NSNumber *)reactTag type:(NSString*) type folder
     }];
 }
 
-RCT_EXPORT_METHOD(addPoint:(nonnull NSNumber *)reactTag x: (float)x y: (float)y)
+RCT_EXPORT_METHOD(addPoint:(nonnull NSNumber *)reactTag x: (float)x y: (float)y type:(NSString*) type)
 {
     [self runCanvas:reactTag block:^(RNSketchCanvas *canvas) {
         [canvas addPointX:x Y:y];
